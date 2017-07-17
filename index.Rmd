@@ -1,0 +1,62 @@
+---
+title: "Practicle Machine Learning Project"
+author: "Samuel Camp"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Summary
+In this project, the goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants to predict the manner in which they did an exercise. This report describes how the model was built, how cross validation was used, what the expected out of sample error was, and why the choises were made.
+
+```{r, message=FALSE, warning=FALSE}
+library(caret)
+library(randomForest)
+```
+
+## Cleaning Data
+
+The training and final testing data is loaded. Quite a bit of the data consists of NA or #DIV/0!, so any columns with these are removed. Also the first five columns are either timestamp data, username, or a unique identifier per row, so these are removed as well. 
+
+```{r}
+tr = read.csv("pml-training.csv",header=TRUE,na.strings = c("NA","NaN","#DIV/0!"))
+tr <- tr[,colSums(is.na(tr)) ==0]
+tr <- subset(tr, select= -c(1:5)) 
+final_test = read.csv("pml-testing.csv", header=TRUE,na.strings=c("NA","NaN,#DIV/0!"))
+final_test <- final_test[,colSums(is.na(final_test)) ==0]
+final_test <- subset(final_test, select= -c(1:5)) 
+```
+
+## Machine Learning
+
+We now split the data into training and testing data, 60/40. This is so we can test our model before the final test.
+
+```{r}
+inTrain <- createDataPartition(y=tr$classe, p=0.6,list=FALSE)
+training <- tr[inTrain,]
+testing <- tr[-inTrain,]
+```
+
+The model is now trained with random forest on all predictors with the classe variable as outcome. Random Forest was chosen since it is one of the most accurate algorithms. The randomForest function is called directly since it is faster.
+
+```{r}
+model_rf <- randomForest(classe~.,data=training, prox=TRUE)
+```
+
+A quick check to see if the model works with the `training` data.
+
+```{r}
+pred_training <- predict(model_rf, training)
+confusionMatrix(pred_training, training$classe)
+```
+
+We now validate the model using the `testing` data.
+
+```{r}
+pred_testing <- predict(model_rf, testing)
+confusionMatrix(pred_testing, testing$classe)
+```
+
+Which leads to an expected accuracy of 99%.
