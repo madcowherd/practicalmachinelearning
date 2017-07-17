@@ -9,7 +9,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Summary
-In this project, the goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants to predict the manner in which they did an exercise. This report describes how the model was built, how cross validation was used, what the expected out of sample error was, and why the choises were made.
+In this project, the goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants to predict the manner in which they did an exercise. This report describes how the model was built, how cross validation was used, what the expected out of sample error was, and why I choose to make the choises I did.
+
 
 ```{r, message=FALSE, warning=FALSE}
 library(caret)
